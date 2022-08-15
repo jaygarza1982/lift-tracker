@@ -1,57 +1,20 @@
 import React, { useEffect } from 'react';
 import './App.css';
 import './bulma.min.css';
-import { v4 as uuid } from 'uuid';
+import dbutils from './dbutils';
 
 function App() {
 
   const exercises = [
-    { name: 'Bench press', id: uuid() },
-    { name: 'Seated dumbbell press', id: uuid() },
-    { name: 'Tricep push-down', id: uuid() },
+    { name: 'Bench press', id: 1 },
+    { name: 'Seated dumbbell press', id: 2 },
+    { name: 'Tricep push-down', id: 3 },
   ];
 
   useEffect(() => {
-    // Check for support
-    const idb =
-      window.indexedDB ||
-      window.mozIndexedDB ||
-      window.webkitIndexedDB ||
-      window.msIndexedDB ||
-      window.shimIndexedDB;
+    dbutils.utils.setup();
 
-    if (!idb) {
-      console.log("This browser doesn't support IndexedDB.");
-      return;
-    }
-
-    const LIFT_DB = 'lift_db';
-    const EXERCISES_STORE_NAME = 'exercises';
-    const LIFTS_STORE_NAME = 'lifts';
-
-    // Create our stores
-    const dbPromise = idb.open(LIFT_DB, 1);
-
-    dbPromise.onerror = e => {
-      console.log('db promise error', e);
-    }
-
-    dbPromise.onupgradeneeded = e => {
-      console.log('db promise on upgrade');
-      
-      dbPromise.result.createObjectStore(EXERCISES_STORE_NAME, { keyPath: 'id', autoIncrement: true });
-      dbPromise.result.createObjectStore(LIFTS_STORE_NAME, { keyPath: 'id', autoIncrement: true });
-    }
-
-    // Example of how to write after DB object store creations
-    const db = idb.open(LIFT_DB, 1);
-
-    db.onsuccess = e => {
-      const trans = db.result.transaction(LIFTS_STORE_NAME, 'readwrite');
-  
-      const LIFTS_STORE = trans.objectStore(LIFTS_STORE_NAME);
-      LIFTS_STORE.put({ name: 'test name here', anotherProp: 'another prop here'});
-    }
+    dbutils.utils.write(dbutils.stores.LIFTS, {testProp: 'test prop value'});
 
   }, []);
 
