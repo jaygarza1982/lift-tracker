@@ -6,14 +6,15 @@ const idb =
     window.shimIndexedDB;
 
 const LIFT_DB = 'lift_db';
+const DB_VERSION = 1;
 
 const STORES = {
     EXERCISES: 'exercises',
     LIFTS: 'lifts'
 }
 
-const utils = {
-    setup: () => {
+const databaseSetup = () => {
+    return new Promise((resolve, reject) => {
         // Check for support
         if (!idb) {
             console.log("This browser doesn't support IndexedDB.");
@@ -21,30 +22,77 @@ const utils = {
         }
 
         // Create our stores
-        const dbPromise = idb.open(LIFT_DB, 1);
+        const dbPromise = idb.open(LIFT_DB, DB_VERSION);
 
-        dbPromise.onerror = e => {
-            console.log('db promise error', e);
+        dbPromise.onblocked = e => {
+            console.log('Trying to create stores was blocked.', e);
         }
 
+        dbPromise.onsuccess = e => {
+            resolve(e);
+        }
+        
         dbPromise.onupgradeneeded = e => {
-            console.log('db promise on upgrade');
+            console.log('db upgrading');
 
             dbPromise.result.createObjectStore(STORES.EXERCISES, { keyPath: 'id', autoIncrement: true });
             dbPromise.result.createObjectStore(STORES.LIFTS, { keyPath: 'id', autoIncrement: true });
+
+            resolve(e);
         }
-    },
-    write: (storeName, object) => {
+
+        dbPromise.onerror = e => {
+            console.log('db error', e);
+            reject(e);
+        }
+    });
+}
+
+const utils = {
+    setup: databaseSetup,
+    write: async (storeName, object) => {
+        await databaseSetup();
+
         // Example of how to write after DB object store creations
-        const db = idb.open(LIFT_DB, 1);
+        const db = idb.open(LIFT_DB, DB_VERSION);
 
         db.onsuccess = e => {
             const trans = db.result.transaction(storeName, 'readwrite');
 
-            const LIFTS_STORE = trans.objectStore(storeName);
-            LIFTS_STORE.put(object);
+            const store = trans.objectStore(storeName);
+            store.put(object);
         }
+    },
+    readAll: (storeName) => {
+        return new Promise(async (resolve, reject) => {
+            await databaseSetup();
+
+            // Reads all from a store
+            const db = idb.open(LIFT_DB, DB_VERSION);
+
+            db.onsuccess = e => {
+                try {
+                    const trans = db.result.transaction(storeName, 'readwrite');
+
+                    const store = trans.objectStore(storeName);
+
+                    const getAllReq = store.getAll();
+
+                    getAllReq.onsuccess = getAllEvent => {
+                        return resolve(getAllEvent.target.result);
+                    }
+
+                    getAllReq.onerror = e => reject(e);
+                } catch (error) {
+                    reject(error);
+                }
+            }
+
+            db.onerror = e => reject(e);
+        });
     }
 }
 
-export default { utils: utils, stores: STORES };
+const toExport = { utils: utils, stores: STORES };
+
+export default toExport;
