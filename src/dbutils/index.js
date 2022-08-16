@@ -64,10 +64,10 @@ const utils = {
         }
     },
     readAll: (storeName) => {
+        // Reads all from a store
         return new Promise(async (resolve, reject) => {
             await databaseSetup();
 
-            // Reads all from a store
             const db = idb.open(LIFT_DB, DB_VERSION);
 
             db.onsuccess = e => {
@@ -83,6 +83,34 @@ const utils = {
                     }
 
                     getAllReq.onerror = e => reject(e);
+                } catch (error) {
+                    reject(error);
+                }
+            }
+
+            db.onerror = e => reject(e);
+        });
+    },
+    get: (storeName, key) => {
+        // Reads specific object from store
+        return new Promise(async (resolve, reject) => {
+            await databaseSetup();
+
+            const db = idb.open(LIFT_DB, DB_VERSION);
+
+            db.onsuccess = e => {
+                try {
+                    const trans = db.result.transaction(storeName, 'readwrite');
+
+                    const store = trans.objectStore(storeName);
+
+                    const getReq = store.get(key);
+
+                    getReq.onsuccess = getAllEvent => {
+                        return resolve(getAllEvent.target.result);
+                    }
+
+                    getReq.onerror = e => reject(e);
                 } catch (error) {
                     reject(error);
                 }

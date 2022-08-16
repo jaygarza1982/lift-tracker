@@ -18,3 +18,10 @@
   grid-template-columns: max-content auto;
   gap: 15px;
 }
+
+.exercise-add-form {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 15px;
+  margin-bottom: 15px;
+}

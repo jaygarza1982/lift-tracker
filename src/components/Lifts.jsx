@@ -1,18 +1,89 @@
+import { useFormik } from 'formik';
 import React from 'react';
+import { useState } from 'react';
+import { useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+
+import dbutils from '../dbutils';
 
 const Lifts = () => {
+
+    const { exerciseId } = useParams();
+
+    const [exercise, setExercise] = useState({});
+    const [lifts, setLifts] = useState([]);
+    
+    const loadExercise = async () => {
+        try {
+            if (!exerciseId) return;
+            const exercisesStore = dbutils.stores.EXERCISES;
+            
+            const exerciseFromDB = await dbutils.utils.get(exercisesStore, parseInt(exerciseId));
+            
+            setExercise(exerciseFromDB);
+        } catch (error) {
+            console.log('Could not load exercise', error);
+        }
+    }
+
+    const loadLifts = async () => {
+        try {
+            if (!exerciseId) return;
+
+            const liftsStore = dbutils.stores.LIFTS;
+
+            // Only return lifts that match this exercise
+            const liftsFromDB = (await dbutils.utils.readAll(liftsStore)).filter(l => l.exerciseId == parseInt(exerciseId));
+
+            setLifts(liftsFromDB);
+        } catch (error) {
+            console.log('Could not load lifts', error);
+        }
+    }
+    
+    useEffect(() => {
+        loadExercise();
+        loadLifts();
+    }, []);
+
+    const formik = useFormik({
+        initialValues: {
+            reps: 0,
+            weight: 0
+        },
+        onSubmit: async (values) => {
+            try {
+                const liftsStore = dbutils.stores.LIFTS;
+    
+                const lift = {
+                    exerciseId: parseInt(exerciseId),
+                    date: new Date(),
+                    ...values
+                }
+
+                await dbutils.utils.write(liftsStore, lift);
+                
+                formik.resetForm();
+                loadLifts();
+            } catch (error) {
+                console.log('Could not save lifts', error);
+            }
+        }
+    });
+
     return (
         <>
             {/* An exercise that you can add sets of reps to */}
-            <br />
             <button
                 className="button is-primary"
-                onClick={() => { console.log('Saving bench press'); }}
+                onClick={formik.handleSubmit}
             >
                 Save
             </button>
 
-            <div>Bench press</div>
+            <div className="has-text-centered is-size-2">
+                {exercise?.exerciseName}
+            </div>
             <div className="input-label-grid">
                 <div>
                     Reps
@@ -22,6 +93,9 @@ const Lifts = () => {
                         className="input is-info"
                         type="number"
                         placeholder="Reps"
+                        name="reps"
+                        value={formik.values.reps}
+                        onChange={formik.handleChange}
                     />
                 </div>
             </div>
@@ -34,6 +108,9 @@ const Lifts = () => {
                         className="input is-info"
                         type="number"
                         placeholder="Weight"
+                        name="weight"
+                        value={formik.values.weight}
+                        onChange={formik.handleChange}
                     />
                 </div>
             </div>
@@ -41,7 +118,19 @@ const Lifts = () => {
                 Bench press performed on a bench
             </div>
 
-            {/* TODO: List of "sets" here. When you save, you add to a set along with the current date */}
+            {/* TODO: Styling */}
+            {
+                // TODO: Key prop of lift id
+                lifts.map(lift => {
+                    return (
+                        <div className="lift">
+                            {
+                                lift.weight + ' ' + lift.reps
+                            }
+                        </div>
+                    )
+                })
+            }
         </>
     );
 }

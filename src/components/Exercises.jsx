@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { useFormik } from 'formik';
 
 import dbutils from '../dbutils';
+import { useNavigate } from 'react-router-dom';
 
 const ExercisesAddForm = ({ loadExercises }) => {
     
@@ -14,6 +15,8 @@ const ExercisesAddForm = ({ loadExercises }) => {
         onSubmit: (values) => {
             // Write to DB
             const exercises = dbutils.stores.EXERCISES;
+
+            // TODO: Fix handle async
             dbutils.utils.write(exercises, values);
 
             // Reload exercises
@@ -21,39 +24,35 @@ const ExercisesAddForm = ({ loadExercises }) => {
             formik.resetForm();
         }
     });
-    
-    return (
-        <>
-            <div className="input-label-grid">
-                <div>
-                    Name:
-                </div>
-                <div>
-                    <input
-                        className="input is-info"
-                        type="text"
-                        placeholder="Exercise Name"
-                        name="exerciseName"
-                        value={formik.values.exerciseName}
-                        onChange={formik.handleChange}
-                    />
-                </div>
 
-                <div>
-                    <button
-                        className="button"
-                        onClick={formik.handleSubmit}
-                    >
-                        Add
-                    </button>
-                </div>
+    return (
+        <div className="exercise-add-form">
+            <div>
+                <input
+                    className="input is-info"
+                    type="text"
+                    placeholder="Exercise Name"
+                    name="exerciseName"
+                    value={formik.values.exerciseName}
+                    onChange={formik.handleChange}
+                />
             </div>
-        </>
+            <div>
+                <button
+                    className="button"
+                    onClick={formik.handleSubmit}
+                >
+                    Add
+                </button>
+            </div>
+        </div>
     );
 }
 
 const Exercises = () => {
     const [exercises, setExercises] = useState([]);
+
+    const navigate = useNavigate();
 
     const loadExercises = async () => {
         try {
@@ -81,7 +80,7 @@ const Exercises = () => {
                         <button
                             key={e.id}
                             className="button"
-                            onClick={() => { console.log(e.id); }}
+                            onClick={() => { navigate(`/lifts/${e.id}`); }}
                         >
                             {e.exerciseName}
                         </button>

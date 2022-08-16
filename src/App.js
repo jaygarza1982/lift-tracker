@@ -1,9 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import './App.css';
 import './bulma.min.css';
-
-import dbutils from './dbutils';
 
 import {
   BrowserRouter as Router,
@@ -20,7 +18,7 @@ function App() {
       <Router>
         <Routes>
           <Route path='/' element={<Exercises />} />
-          <Route path='/lifts/:liftId' element={<Lifts />} />
+          <Route path='/lifts/:exerciseId' element={<Lifts />} />
         </Routes>
       </Router>
     </div>
