@@ -40,7 +40,7 @@ const Lifts = () => {
             console.log('Could not load lifts', error);
         }
     }
-    
+
     useEffect(() => {
         loadExercise();
         loadLifts();
@@ -48,13 +48,13 @@ const Lifts = () => {
 
     const formik = useFormik({
         initialValues: {
-            reps: 0,
-            weight: 0
+            reps: '',
+            weight: ''
         },
         onSubmit: async (values) => {
             try {
                 const liftsStore = dbutils.stores.LIFTS;
-    
+
                 const lift = {
                     exerciseId: parseInt(exerciseId),
                     date: new Date(),
@@ -62,7 +62,7 @@ const Lifts = () => {
                 }
 
                 await dbutils.utils.write(liftsStore, lift);
-                
+
                 formik.resetForm();
                 loadLifts();
             } catch (error) {
@@ -75,7 +75,7 @@ const Lifts = () => {
         <>
             {/* An exercise that you can add sets of reps to */}
             <button
-                className="button is-primary"
+                className="button is-primary is-pulled-right"
                 onClick={formik.handleSubmit}
             >
                 Save
@@ -84,46 +84,48 @@ const Lifts = () => {
             <div className="has-text-centered is-size-2">
                 {exercise?.exerciseName}
             </div>
-            <div className="input-label-grid">
-                <div>
-                    Reps
+            <div className="set-form-grid">
+                <div className="input-label-grid">
+                    <div>
+                        Reps
+                    </div>
+                    <div>
+                        <input
+                            className="input is-info"
+                            type="number"
+                            placeholder="Reps"
+                            name="reps"
+                            value={formik.values.reps}
+                            onChange={formik.handleChange}
+                        />
+                    </div>
                 </div>
-                <div>
-                    <input
-                        className="input is-info"
-                        type="number"
-                        placeholder="Reps"
-                        name="reps"
-                        value={formik.values.reps}
-                        onChange={formik.handleChange}
-                    />
+                <div className="input-label-grid">
+                    <div>
+                        Weight
+                    </div>
+                    <div>
+                        <input
+                            className="input is-info"
+                            type="number"
+                            placeholder="Weight"
+                            name="weight"
+                            value={formik.values.weight}
+                            onChange={formik.handleChange}
+                        />
+                    </div>
                 </div>
             </div>
-            <div className="input-label-grid">
-                <div>
-                    Weight
-                </div>
-                <div>
-                    <input
-                        className="input is-info"
-                        type="number"
-                        placeholder="Weight"
-                        name="weight"
-                        value={formik.values.weight}
-                        onChange={formik.handleChange}
-                    />
-                </div>
-            </div>
-            <div className="box exercise-description">
+            {/* TODO: Description box here */}
+            {/* <div className="box exercise-description">
                 Bench press performed on a bench
-            </div>
+            </div> */}
 
             {/* TODO: Styling */}
             {
-                // TODO: Key prop of lift id
                 lifts.map(lift => {
                     return (
-                        <div className="lift">
+                        <div key={lift.id} className="lift">
                             {
                                 lift.weight + ' ' + lift.reps
                             }

@@ -13,15 +13,22 @@ const ExercisesAddForm = ({ loadExercises }) => {
             exerciseName: '',
         },
         onSubmit: (values) => {
-            // Write to DB
-            const exercises = dbutils.stores.EXERCISES;
+            const addValues = async () => {
+                try {
+                    // Write to DB
+                    const exercises = dbutils.stores.EXERCISES;
 
-            // TODO: Fix handle async
-            dbutils.utils.write(exercises, values);
+                    await dbutils.utils.write(exercises, values);
+        
+                    // Reload exercises
+                    loadExercises();
+                    formik.resetForm();
+                } catch (error) {
+                    console.log('Could not add set', error);
+                }
+            }
 
-            // Reload exercises
-            loadExercises();
-            formik.resetForm();
+            addValues();
         }
     });
 
