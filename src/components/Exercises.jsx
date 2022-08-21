@@ -58,13 +58,19 @@ const ExercisesAddForm = ({ loadExercises }) => {
     );
 }
 
-const ExerciseLink = ({ exercise }) => {
+const ExerciseLink = ({ exercise, loadExercises }) => {
     const navigate = useNavigate();
 
-    const deleteAction = () => {
-        // TODO: Implement delete
-        console.log('Would delete', exercise.id);
-        setDeleteOpen(false);
+    const deleteAction = async () => {
+        const exerciseStore = dbutils.stores.EXERCISES;
+
+        try {
+            await dbutils.utils.delete(exerciseStore, exercise.id);
+            setDeleteOpen(false);
+            loadExercises();
+        } catch (error) {
+            console.log('Could not delete exercise because', error);
+        }
     }
 
     const [setDeleteOpen, deleteModal] = useModal({
@@ -124,7 +130,7 @@ const Exercises = () => {
             {/* List of categories. Clicking on it will bring you to a page where you can add sets of reps like below */}
             <div className="card-grid">
                 {
-                    exercises.map(e => <ExerciseLink key={e.id} exercise={e} />)
+                    exercises.map(e => <ExerciseLink key={e.id} exercise={e} loadExercises={loadExercises} />)
                 }
             </div>
         </>

@@ -23,7 +23,7 @@ const Modal = ({title, message, open, setOpen, saveAction}) => {
                         Yes
                     </button>
                     <button className="button" onClick={closeModal}>
-                        Close
+                        Cancel
                     </button>
                 </footer>
             </div>

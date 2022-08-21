@@ -118,6 +118,34 @@ const utils = {
 
             db.onerror = e => reject(e);
         });
+    },
+    delete: (storeName, key) => {
+        // Deletes specific object from store
+        return new Promise(async (resolve, reject) => {
+            await databaseSetup();
+
+            const db = idb.open(LIFT_DB, DB_VERSION);
+
+            db.onsuccess = e => {
+                try {
+                    const trans = db.result.transaction(storeName, 'readwrite');
+
+                    const store = trans.objectStore(storeName);
+
+                    const deleteReq = store.delete(key);
+
+                    deleteReq.onsuccess = getAllEvent => {
+                        return resolve(getAllEvent.target.result);
+                    }
+
+                    deleteReq.onerror = e => reject(e);
+                } catch (error) {
+                    reject(error);
+                }
+            }
+
+            db.onerror = e => reject(e);
+        });
     }
 }
 
