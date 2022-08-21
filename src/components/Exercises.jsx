@@ -98,6 +98,8 @@ const ExerciseLink = ({ exercise }) => {
     );
 }
 
+// TODO: Way to export all user data as JSON file. We should be able to create a link to a "blob" to download user data
+
 const Exercises = () => {
     const [exercises, setExercises] = useState([]);
 
