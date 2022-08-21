@@ -44,6 +44,7 @@ const ExercisesAddForm = ({ loadExercises }) => {
                     name="exerciseName"
                     value={formik.values.exerciseName}
                     onChange={formik.handleChange}
+                    onKeyDown={e => e.key === 'Enter' ? formik.handleSubmit(e) : undefined}
                 />
             </div>
             <div>
