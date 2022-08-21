@@ -5,6 +5,8 @@ import { useFormik } from 'formik';
 
 import dbutils from '../dbutils';
 import { useNavigate } from 'react-router-dom';
+import TrashIcon from './icons/Trash';
+import useModal from './hooks/useModal';
 
 const ExercisesAddForm = ({ loadExercises }) => {
     
@@ -56,10 +58,48 @@ const ExercisesAddForm = ({ loadExercises }) => {
     );
 }
 
+const ExerciseLink = ({ exercise }) => {
+    const navigate = useNavigate();
+
+    const deleteAction = () => {
+        // TODO: Implement delete
+        console.log('Would delete', exercise.id);
+        setDeleteOpen(false);
+    }
+
+    const [setDeleteOpen, deleteModal] = useModal({
+        title: 'Are you sure?',
+        message: `"${exercise.exerciseName}" and its history will be gone forever.`,
+        saveAction: deleteAction
+    });
+
+
+    const openDeleteModal = () => {
+        setDeleteOpen(true);
+    };
+
+    return (
+        <div className='exercise-button-grid'>
+            {deleteModal}
+            <div>
+                <button
+                    className="button exercise-button-link"
+                    onClick={() => { navigate(`/lifts/${exercise.id}`); }}
+                >
+                    {exercise.exerciseName}
+                </button>
+            </div>
+            <div>
+                <button className='button' onClick={openDeleteModal}>
+                    <TrashIcon />
+                </button>
+            </div>
+        </div>
+    );
+}
+
 const Exercises = () => {
     const [exercises, setExercises] = useState([]);
-
-    const navigate = useNavigate();
 
     const loadExercises = async () => {
         try {
@@ -82,16 +122,7 @@ const Exercises = () => {
             {/* List of categories. Clicking on it will bring you to a page where you can add sets of reps like below */}
             <div className="card-grid">
                 {
-                    exercises.map(e =>
-                    (
-                        <button
-                            key={e.id}
-                            className="button"
-                            onClick={() => { navigate(`/lifts/${e.id}`); }}
-                        >
-                            {e.exerciseName}
-                        </button>
-                    ))
+                    exercises.map(e => <ExerciseLink key={e.id} exercise={e} />)
                 }
             </div>
         </>

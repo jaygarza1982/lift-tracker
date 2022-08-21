@@ -31,3 +31,13 @@
   grid-template-columns: 1fr;
   gap: 15px;
 }
+
+.exercise-button-link {
+  width: 100%;
+}
+
+.exercise-button-grid {
+  display: grid;
+  grid-template-columns: 1fr 63px;
+  gap: 15px;
+}
