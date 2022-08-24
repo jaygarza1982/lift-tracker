@@ -149,6 +149,13 @@ const utils = {
     }
 }
 
-const toExport = { utils: utils, stores: STORES };
+const getUserData = async () => {
+    const exercises = await utils.readAll(STORES.EXERCISES);
+    const lifts = await utils.readAll(STORES.LIFTS);
+
+    return JSON.stringify({ exercises: exercises, lifts: lifts });
+}
+
+const toExport = { utils: utils, stores: STORES, getUserData: getUserData };
 
 export default toExport;

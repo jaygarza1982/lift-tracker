@@ -7,6 +7,7 @@ import dbutils from '../dbutils';
 import { useNavigate } from 'react-router-dom';
 import TrashIcon from './icons/Trash';
 import useModal from './hooks/useModal';
+import DataExport from './DataExport';
 
 const ExercisesAddForm = ({ loadExercises }) => {
     
@@ -15,6 +16,9 @@ const ExercisesAddForm = ({ loadExercises }) => {
             exerciseName: '',
         },
         onSubmit: (values) => {
+            // Cannot add blank exercise name
+            if (values?.exerciseName.trim() == '') return;
+
             const addValues = async () => {
                 try {
                     // Write to DB
@@ -105,8 +109,6 @@ const ExerciseLink = ({ exercise, loadExercises }) => {
     );
 }
 
-// TODO: Way to export all user data as JSON file. We should be able to create a link to a "blob" to download user data
-
 const Exercises = () => {
     const [exercises, setExercises] = useState([]);
 
@@ -134,6 +136,8 @@ const Exercises = () => {
                     exercises.map(e => <ExerciseLink key={e.id} exercise={e} loadExercises={loadExercises} />)
                 }
             </div>
+
+            <DataExport />
         </>
     );
 }
