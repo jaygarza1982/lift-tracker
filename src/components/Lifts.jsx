@@ -5,6 +5,8 @@ import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
 import dbutils from '../dbutils';
+import useModal from './hooks/useModal';
+import TrashIcon from './icons/Trash';
 
 const Lifts = () => {
 
@@ -71,6 +73,60 @@ const Lifts = () => {
         }
     });
 
+    const LiftInfo = ({ lift, loadLifts }) => {
+
+
+        const deleteAction = async () => {
+            const liftsStore = dbutils.stores.LIFTS;
+    
+            try {
+                await dbutils.utils.delete(liftsStore, lift.id);
+                setDeleteOpen(false);
+                loadLifts();
+            } catch (error) {
+                console.log('Could not delete exercise because', error);
+            }
+        }
+    
+        const [setDeleteOpen, deleteModal] = useModal({
+            title: 'Are you sure?',
+            message: `This lift and its history will be gone forever.`,
+            saveAction: deleteAction
+        });
+    
+    
+        const openDeleteModal = () => {
+            setDeleteOpen(true);
+        };
+        return (
+            <div className="box">
+                {deleteModal}
+                <div className="lift-info-container">
+                    <div className="lift-info">
+                        <strong>
+                            {`${lift.reps} `}
+                        </strong>
+                        reps
+                    </div>
+                    <div className="lift-info">
+                        <strong>
+                            {` ${lift.weight} `}
+                        </strong>
+                        lbs
+                    </div>
+                    <div className="lift-info">
+                        {`${lift.date.toLocaleString()}`}
+                    </div>
+                    <div className="lift-info">
+                        <button className='button' onClick={openDeleteModal}>
+                            <TrashIcon />
+                        </button>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
     return (
         <>
             {/* An exercise that you can add sets of reps to */}
@@ -121,18 +177,17 @@ const Lifts = () => {
                 Bench press performed on a bench
             </div> */}
 
-            {/* TODO: Styling */}
-            {
-                lifts.map(lift => {
-                    return (
-                        <div key={lift.id} className="lift">
-                            {
-                                lift.weight + ' ' + lift.reps
-                            }
-                        </div>
-                    )
-                })
-            }
+            <div className="lifts">
+                {
+                    lifts.map(lift => {
+                        return (
+                            <div key={lift.id} className="lift">
+                                <LiftInfo lift={lift} loadLifts={loadLifts} />
+                            </div>
+                        )
+                    })
+                }
+            </div>
         </>
     );
 }

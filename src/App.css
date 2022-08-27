@@ -46,3 +46,18 @@
   padding-top: 15px;
   width: 100%;
 }
+
+.lifts {
+  display: grid;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.lift-info-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.lift-info {
+  text-align: center;
+}

@@ -26,7 +26,7 @@ const DataExport = () => {
     return (
         <div className="data-export">
             <button
-                className="button is-fullwidth"
+                className="button is-primary is-fullwidth"
                 onClick={getAllData}
             >
                 Export Data
