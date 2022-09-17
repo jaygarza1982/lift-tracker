@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useFormik } from 'formik';
 
 import dbutils from '../dbutils';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import TrashIcon from './icons/Trash';
 import useModal from './hooks/useModal';
 import DataExport from './DataExport';
@@ -90,11 +90,11 @@ const ExerciseLink = ({ exercise, loadExercises }) => {
     };
 
     return (
-        <div className='exercise-button-grid'>
+        <div className='button-link-with-delete'>
             {deleteModal}
             <div>
                 <button
-                    className="button exercise-button-link"
+                    className="button button-link"
                     onClick={() => { navigate(`/lifts/${exercise.id}`); }}
                 >
                     {exercise.exerciseName}
@@ -110,13 +110,23 @@ const ExerciseLink = ({ exercise, loadExercises }) => {
 }
 
 const Exercises = () => {
+
+    const { categoryId } = useParams();
+
     const [exercises, setExercises] = useState([]);
 
     const loadExercises = async () => {
         try {
-            const exercisesFromDB = await dbutils.utils.readAll(dbutils.stores.EXERCISES);
+            // If we are on the "All" category, read all exercises
+            if (categoryId == -1) {
+                const exercisesFromDB = await dbutils.utils.readAll(dbutils.stores.EXERCISES);
+                setExercises(exercisesFromDB);
+                return;
+            }
 
-            setExercises(exercisesFromDB);
+            // TODO: Implement this logic below
+            // If we are on any other category
+            // read from the categories table and fetch exercises that belong to this category
         } catch (error) {
             console.log('Could not read because', error);
         }
@@ -130,7 +140,7 @@ const Exercises = () => {
         <>
             <ExercisesAddForm loadExercises={loadExercises} />
 
-            {/* List of categories. Clicking on it will bring you to a page where you can add sets of reps like below */}
+            {/* List of exercises. Clicking on it will bring you to a page where you can add sets of reps like below */}
             <div className="card-grid">
                 {
                     exercises.map(e => <ExerciseLink key={e.id} exercise={e} loadExercises={loadExercises} />)

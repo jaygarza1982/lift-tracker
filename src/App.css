@@ -32,11 +32,11 @@
   gap: 15px;
 }
 
-.exercise-button-link {
+.button-link {
   width: 100%;
 }
 
-.exercise-button-grid {
+.button-link-with-delete {
   display: grid;
   grid-template-columns: 1fr 63px;
   gap: 15px;

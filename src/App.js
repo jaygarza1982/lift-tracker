@@ -11,13 +11,15 @@ import {
 
 import Lifts from './components/Lifts';
 import Exercises from './components/Exercises';
+import Categories from './components/Categories';
 
 function App() {
   return (
     <div className="App">
       <Router>
         <Routes>
-          <Route path='/' element={<Exercises />} />
+          <Route path='/' element={<Categories />} />
+          <Route path='/exercises/:categoryId' element={<Exercises />} />
           <Route path='/lifts/:exerciseId' element={<Lifts />} />
         </Routes>
       </Router>
