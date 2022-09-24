@@ -118,7 +118,7 @@ const Exercises = () => {
     const loadExercises = async () => {
         try {
             // If we are on the "All" category, read all exercises
-            if (categoryId == -1) {
+            if (categoryId == 'all') {
                 const exercisesFromDB = await dbutils.utils.readAll(dbutils.stores.EXERCISES);
                 setExercises(exercisesFromDB);
                 return;

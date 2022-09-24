@@ -79,7 +79,7 @@ const Categories = () => {
                     // Add a static "All" category that all exercises are apart of
                     [
                         {
-                            id: -1,
+                            id: 'all',
                             categoryName: 'All',
                         },
                         ...categories
