@@ -6,7 +6,7 @@ import { useFormik } from 'formik';
 import dbutils from '../dbutils';
 import { useNavigate, useParams } from 'react-router-dom';
 import TrashIcon from './icons/Trash';
-import useModal from './hooks/useModal';
+import useDeleteModal from './hooks/useDeleteModal';
 import DataExport from './DataExport';
 
 const ExercisesAddForm = ({ loadExercises }) => {
@@ -78,7 +78,7 @@ const ExerciseLink = ({ exercise, loadExercises }) => {
         }
     }
 
-    const [setDeleteOpen, deleteModal] = useModal({
+    const [setDeleteOpen, deleteModal] = useDeleteModal({
         title: 'Are you sure?',
         message: `"${exercise.exerciseName}" and its history will be gone forever.`,
         saveAction: deleteAction

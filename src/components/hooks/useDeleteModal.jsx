@@ -31,7 +31,7 @@ const Modal = ({title, message, open, setOpen, saveAction}) => {
     )
 }
 
-const useModal = ({title, message, saveAction}) => {
+const useDeleteModal = ({title, message, saveAction}) => {
     const [open, setOpen] = useState(false);
 
     const modal = <Modal open={open} setOpen={setOpen} title={title} message={message} saveAction={saveAction} />
@@ -39,4 +39,4 @@ const useModal = ({title, message, saveAction}) => {
     return [setOpen, modal];
 }
 
-export default useModal;
+export default useDeleteModal;

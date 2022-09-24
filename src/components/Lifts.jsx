@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
 import dbutils from '../dbutils';
-import useModal from './hooks/useModal';
+import useDeleteModal from './hooks/useDeleteModal';
 import TrashIcon from './icons/Trash';
 
 const Lifts = () => {
@@ -88,7 +88,7 @@ const Lifts = () => {
             }
         }
     
-        const [setDeleteOpen, deleteModal] = useModal({
+        const [setDeleteOpen, deleteModal] = useDeleteModal({
             title: 'Are you sure?',
             message: `This lift and its history will be gone forever.`,
             saveAction: deleteAction

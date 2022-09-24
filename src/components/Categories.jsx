@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import dbutils from '../dbutils';
-import useModal from './hooks/useModal';
+import useDeleteModal from './hooks/useDeleteModal';
 import TrashIcon from './icons/Trash';
 
 const CategoryLink = ({ category, loadCategories }) => {
@@ -22,7 +22,7 @@ const CategoryLink = ({ category, loadCategories }) => {
         }
     }
 
-    const [setDeleteOpen, deleteModal] = useModal({
+    const [setDeleteOpen, deleteModal] = useDeleteModal({
         title: 'Are you sure?',
         message: `Delete the "${category.categoryName}" category?`,
         saveAction: deleteAction
