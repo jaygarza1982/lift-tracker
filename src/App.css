@@ -61,3 +61,8 @@
 .lift-info {
   text-align: center;
 }
+
+.lifts-header {
+  display: flex;
+  justify-content: space-between;
+}
