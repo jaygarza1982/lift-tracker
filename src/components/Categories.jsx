@@ -72,6 +72,7 @@ const Categories = () => {
     }, []);
 
     return (
+        // TODO: Way to add categories from this list like the exercises page
         <div className="exercise-categories">
             {/* List of categories. Clicking on it will bring you to a page where you can add sets of reps like below */}
             <div className="card-grid">
