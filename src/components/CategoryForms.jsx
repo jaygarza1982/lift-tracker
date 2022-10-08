@@ -2,6 +2,7 @@ import React from 'react';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import dbutils from '../dbutils';
+import useDBFetch from './hooks/useDBFetch';
 
 const CategoryButton = ({ category }) => {
     return (
@@ -16,17 +17,11 @@ const CategoryButton = ({ category }) => {
 
 const CategoryFormBody = ({ exerciseId }) => {
 
-    const [categories, setCategories] = useState([]);
+    const [categories, loadCategories] = useDBFetch(dbutils.stores.CATEGORIES);
 
-    const loadCategories = async () => {
-        try {
-            const categoriesFromDB = await dbutils.utils.readAll(dbutils.stores.CATEGORIES);
-
-            setCategories(categoriesFromDB);
-        } catch (error) {
-            console.log('Could not read because', error);
-        }
-    }
+    useEffect(() => {
+        loadCategories();
+    }, []);
 
     useEffect(() => {
         loadCategories();

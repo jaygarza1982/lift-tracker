@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import dbutils from '../dbutils';
+import useDBFetch from './hooks/useDBFetch';
 import useDeleteModal from './hooks/useDeleteModal';
 import TrashIcon from './icons/Trash';
 
@@ -91,6 +92,7 @@ const CategoryAddForm = ({ load }) => {
                     type="text"
                     placeholder="Category Name"
                     name="categoryName"
+                    autoComplete="off"
                     value={formik.values.categoryName}
                     onChange={formik.handleChange}
                     onKeyDown={e => e.key === 'Enter' ? formik.handleSubmit(e) : undefined}
@@ -110,17 +112,7 @@ const CategoryAddForm = ({ load }) => {
 
 const Categories = () => {
 
-    const [categories, setCategories] = useState([]);
-
-    const loadCategories = async () => {
-        try {
-            const categoriesFromDB = await dbutils.utils.readAll(dbutils.stores.CATEGORIES);
-
-            setCategories(categoriesFromDB);
-        } catch (error) {
-            console.log('Could not read because', error);
-        }
-    }
+    const [categories, loadCategories] = useDBFetch(dbutils.stores.CATEGORIES);
 
     useEffect(() => {
         loadCategories();
