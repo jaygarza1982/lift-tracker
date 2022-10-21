@@ -10,6 +10,10 @@ const useDBFetch = (store) => {
             const fromDB = await dbutils.utils.readAll(store);
 
             setEntries(fromDB);
+
+            // State does not update immediately after this function is called
+            // User can optionally get this value right away instead of looking at the state
+            return fromDB;
         } catch (error) {
             console.log('Could not read because', error);
         }

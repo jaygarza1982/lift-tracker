@@ -8,6 +8,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import TrashIcon from './icons/Trash';
 import useDeleteModal from './hooks/useDeleteModal';
 import DataExport from './DataExport';
+import useDBFetch from './hooks/useDBFetch';
 
 const ExercisesAddForm = ({ loadExercises }) => {
     
@@ -115,6 +116,10 @@ const Exercises = () => {
 
     const [exercises, setExercises] = useState([]);
 
+    // State does not update immediately after these are called, so we get whats returned from them
+    const [, loadExercisesInDB] = useDBFetch(dbutils.stores.EXERCISES);
+    const [, loadMappedLifts] = useDBFetch(dbutils.stores.LIFTS_IN_CATEGORIES);
+
     const loadExercises = async () => {
         try {
             // If we are on the "All" category, read all exercises
@@ -127,6 +132,21 @@ const Exercises = () => {
             // TODO: Implement this logic below
             // If we are on any other category
             // read from the categories table and fetch exercises that belong to this category
+            
+            const exercisesInDB = await loadExercisesInDB();
+            const mappedLifts = await loadMappedLifts();
+
+            const exercisesInCategory = [];
+            exercisesInDB.forEach(exercise => {
+                const { id } = exercise;
+
+                // If the exercise exists within our category, add it to the exercises
+                if (mappedLifts.some(m => m.exerciseId == id && m.categoryId == categoryId)) {
+                    exercisesInCategory.push(exercise);
+                }
+            });
+            
+            setExercises(exercisesInCategory);
         } catch (error) {
             console.log('Could not read because', error);
         }
