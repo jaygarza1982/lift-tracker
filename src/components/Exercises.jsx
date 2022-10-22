@@ -4,10 +4,12 @@ import { useEffect } from 'react';
 import { useFormik } from 'formik';
 
 import dbutils from '../dbutils';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import TrashIcon from './icons/Trash';
-import useModal from './hooks/useModal';
+import useDeleteModal from './hooks/useDeleteModal';
 import DataExport from './DataExport';
+import useDBFetch from './hooks/useDBFetch';
+import getLiftInCategory from './utils/liftsInCategoryPred';
 
 const ExercisesAddForm = ({ loadExercises }) => {
     
@@ -78,7 +80,7 @@ const ExerciseLink = ({ exercise, loadExercises }) => {
         }
     }
 
-    const [setDeleteOpen, deleteModal] = useModal({
+    const [setDeleteOpen, deleteModal] = useDeleteModal({
         title: 'Are you sure?',
         message: `"${exercise.exerciseName}" and its history will be gone forever.`,
         saveAction: deleteAction
@@ -90,11 +92,11 @@ const ExerciseLink = ({ exercise, loadExercises }) => {
     };
 
     return (
-        <div className='exercise-button-grid'>
+        <div className='button-link-with-delete'>
             {deleteModal}
             <div>
                 <button
-                    className="button exercise-button-link"
+                    className="button button-link"
                     onClick={() => { navigate(`/lifts/${exercise.id}`); }}
                 >
                     {exercise.exerciseName}
@@ -110,13 +112,45 @@ const ExerciseLink = ({ exercise, loadExercises }) => {
 }
 
 const Exercises = () => {
+
+    const { categoryId } = useParams();
+
     const [exercises, setExercises] = useState([]);
+
+    // State does not update immediately after these are called, so we get whats returned from them
+    const [, loadExercisesInDB] = useDBFetch(dbutils.stores.EXERCISES);
+    const [, loadMappedLifts] = useDBFetch(dbutils.stores.LIFTS_IN_CATEGORIES);
 
     const loadExercises = async () => {
         try {
-            const exercisesFromDB = await dbutils.utils.readAll(dbutils.stores.EXERCISES);
+            // If we are on the "All" category, read all exercises
+            if (categoryId == 'all') {
+                const exercisesFromDB = await dbutils.utils.readAll(dbutils.stores.EXERCISES);
+                setExercises(exercisesFromDB);
+                return;
+            }
+            
+            const exercisesInDB = await loadExercisesInDB();
+            const mappedLifts = await loadMappedLifts();
 
-            setExercises(exercisesFromDB);
+            const exercisesInCategory = [];
+            exercisesInDB.forEach(exercise => {
+                const { id } = exercise;
+
+                // If the exercise exists within our category, add it to the exercises
+                const existsInCategory = mappedLifts.some(
+                    getLiftInCategory(
+                        id,
+                        categoryId
+                    )
+                )
+
+                if (existsInCategory) {
+                    exercisesInCategory.push(exercise);
+                }
+            });
+            
+            setExercises(exercisesInCategory);
         } catch (error) {
             console.log('Could not read because', error);
         }
@@ -130,14 +164,17 @@ const Exercises = () => {
         <>
             <ExercisesAddForm loadExercises={loadExercises} />
 
-            {/* List of categories. Clicking on it will bring you to a page where you can add sets of reps like below */}
+            {/* List of exercises. Clicking on it will bring you to a page where you can add sets of reps like below */}
             <div className="card-grid">
                 {
                     exercises.map(e => <ExerciseLink key={e.id} exercise={e} loadExercises={loadExercises} />)
                 }
             </div>
 
-            <DataExport />
+            {
+                // Only show data export on all category
+                categoryId == 'all' ? <DataExport /> : ''
+            }
         </>
     );
 }

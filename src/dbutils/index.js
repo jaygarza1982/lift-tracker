@@ -10,7 +10,9 @@ const DB_VERSION = 1;
 
 const STORES = {
     EXERCISES: 'exercises',
-    LIFTS: 'lifts'
+    CATEGORIES: 'categories',
+    LIFTS: 'lifts',
+    LIFTS_IN_CATEGORIES: 'liftsInCategories'
 }
 
 const databaseSetup = () => {
@@ -37,6 +39,8 @@ const databaseSetup = () => {
 
             dbPromise.result.createObjectStore(STORES.EXERCISES, { keyPath: 'id', autoIncrement: true });
             dbPromise.result.createObjectStore(STORES.LIFTS, { keyPath: 'id', autoIncrement: true });
+            dbPromise.result.createObjectStore(STORES.CATEGORIES, { keyPath: 'id', autoIncrement: true });
+            dbPromise.result.createObjectStore(STORES.LIFTS_IN_CATEGORIES, { keyPath: 'id', autoIncrement: true });
 
             resolve(e);
         }

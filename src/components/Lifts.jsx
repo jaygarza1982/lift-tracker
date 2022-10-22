@@ -5,8 +5,11 @@ import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
 import dbutils from '../dbutils';
+import useDeleteModal from './hooks/useDeleteModal';
 import useModal from './hooks/useModal';
 import TrashIcon from './icons/Trash';
+import CategoryIcon from './icons/CategoryIcon';
+import constructCategoryAddForms from './CategoryForms';
 
 const Lifts = () => {
 
@@ -88,7 +91,7 @@ const Lifts = () => {
             }
         }
     
-        const [setDeleteOpen, deleteModal] = useModal({
+        const [setDeleteOpen, deleteModal] = useDeleteModal({
             title: 'Are you sure?',
             message: `This lift and its history will be gone forever.`,
             saveAction: deleteAction
@@ -127,15 +130,42 @@ const Lifts = () => {
         )
     }
 
+    const [categoryAddBody, ] = constructCategoryAddForms(exerciseId);
+
+    const [setFormOpen, categoryModal] = useModal(
+        {
+            title: 'Category Add',
+            bodyComponent: categoryAddBody,
+            footerComponent: (
+                <>
+                    <div>
+                        Toggle a category for this exercise by clicking on of the buttons listed.
+                        <br />
+                        The highlighted buttons are the categories this exercise is already in.
+                    </div>
+                </>
+            )
+        }
+    )
+
     return (
         <>
             {/* An exercise that you can add sets of reps to */}
-            <button
-                className="button is-primary is-pulled-right"
-                onClick={formik.handleSubmit}
-            >
-                Save
-            </button>
+            <div className="lifts-header">
+                <button
+                    className="button is-primary"
+                    onClick={() => { setFormOpen(true); }}
+                >
+                    <CategoryIcon />
+                </button>
+                <button
+                    className="button is-primary"
+                    onClick={formik.handleSubmit}
+                >
+                    Save
+                </button>
+            </div>
+            {categoryModal}
 
             <div className="has-text-centered is-size-2">
                 {exercise?.exerciseName}
