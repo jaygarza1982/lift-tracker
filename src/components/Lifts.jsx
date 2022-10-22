@@ -136,7 +136,15 @@ const Lifts = () => {
         {
             title: 'Category Add',
             bodyComponent: categoryAddBody,
-            footerComponent: <>Test footer!</>
+            footerComponent: (
+                <>
+                    <div>
+                        Toggle a category for this exercise by clicking on of the buttons listed.
+                        <br />
+                        The highlighted buttons are the categories this exercise is already in.
+                    </div>
+                </>
+            )
         }
     )
 
