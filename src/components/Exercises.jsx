@@ -9,6 +9,7 @@ import TrashIcon from './icons/Trash';
 import useDeleteModal from './hooks/useDeleteModal';
 import DataExport from './DataExport';
 import useDBFetch from './hooks/useDBFetch';
+import getLiftInCategory from './utils/liftsInCategoryPred';
 
 const ExercisesAddForm = ({ loadExercises }) => {
     
@@ -128,10 +129,6 @@ const Exercises = () => {
                 setExercises(exercisesFromDB);
                 return;
             }
-
-            // TODO: Implement this logic below
-            // If we are on any other category
-            // read from the categories table and fetch exercises that belong to this category
             
             const exercisesInDB = await loadExercisesInDB();
             const mappedLifts = await loadMappedLifts();
@@ -141,7 +138,14 @@ const Exercises = () => {
                 const { id } = exercise;
 
                 // If the exercise exists within our category, add it to the exercises
-                if (mappedLifts.some(m => m.exerciseId == id && m.categoryId == categoryId)) {
+                const existsInCategory = mappedLifts.some(
+                    getLiftInCategory(
+                        id,
+                        categoryId
+                    )
+                )
+
+                if (existsInCategory) {
                     exercisesInCategory.push(exercise);
                 }
             });
@@ -167,7 +171,10 @@ const Exercises = () => {
                 }
             </div>
 
-            <DataExport />
+            {
+                // Only show data export on all category
+                categoryId == 'all' ? <DataExport /> : ''
+            }
         </>
     );
 }
